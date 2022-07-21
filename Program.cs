@@ -1,6 +1,8 @@
 
 using CropDealWebAPI.Configurations;
 using CropDealWebAPI.Models;
+using CropDealWebAPI.Repository;
+using CropDealWebAPI.Service;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,8 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<CropDealContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("dbconn")));
 builder.Services.AddAutoMapper(typeof(MapperConfig));
+builder.Services.AddScoped<IRepository<UserProfile,int>, UserProfileRepository>();
+builder.Services.AddScoped<UserProfileService, UserProfileService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

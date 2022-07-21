@@ -59,6 +59,7 @@ namespace CropDealWebAPI.Controllers
                 return BadRequest();
             }
 
+
             _context.Entry(invoice).State = EntityState.Modified;
 
             try

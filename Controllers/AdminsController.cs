@@ -20,9 +20,34 @@ namespace CropDealWebAPI.Controllers
             _context = context;
         }
 
-        
+        // GET: api/Admins
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Admin>>> GetAdmins()
+        {
+          if (_context.Admins == null)
+          {
+              return NotFound();
+          }
+            return await _context.Admins.ToListAsync();
+        }
 
-        
+        // GET: api/Admins/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Admin>> GetAdmin(int id)
+        {
+          if (_context.Admins == null)
+          {
+              return NotFound();
+          }
+            var admin = await _context.Admins.FindAsync(id);
+
+            if (admin == null)
+            {
+                return NotFound();
+            }
+
+            return admin;
+        }
 
         // PUT: api/Admins/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -70,7 +95,25 @@ namespace CropDealWebAPI.Controllers
             return CreatedAtAction("GetAdmin", new { id = admin.AdminId }, admin);
         }
 
-       
+        // DELETE: api/Admins/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAdmin(int id)
+        {
+            if (_context.Admins == null)
+            {
+                return NotFound();
+            }
+            var admin = await _context.Admins.FindAsync(id);
+            if (admin == null)
+            {
+                return NotFound();
+            }
+
+            _context.Admins.Remove(admin);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
 
         private bool AdminExists(int id)
         {
