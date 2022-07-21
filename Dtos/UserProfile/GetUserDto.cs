@@ -1,6 +1,6 @@
 ﻿namespace CropDealWebAPI.Dtos.UserProfile
 {
-    public class GetUserDto
+    public class GetUserDto:BaseUserDto
     {
       
         public string UserName { get; set; }

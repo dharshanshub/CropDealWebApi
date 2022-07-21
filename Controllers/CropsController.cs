@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CropDealWebAPI.Models;
+using CropDealWebAPI.Dtos.Crop;
+using AutoMapper;
 
 namespace CropDealWebAPI.Controllers
 {
@@ -14,26 +16,31 @@ namespace CropDealWebAPI.Controllers
     public class CropsController : ControllerBase
     {
         private readonly CropDealContext _context;
+        private readonly IMapper mapper;
 
-        public CropsController(CropDealContext context)
+        public CropsController(CropDealContext context, IMapper mapper)
         {
             _context = context;
+            this.mapper = mapper;
         }
 
         // GET: api/Crops
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Crop>>> GetCrops()
+        public async Task<ActionResult<IEnumerable<GetCropDto>>> GetCrops()
         {
+           
           if (_context.Crops == null)
           {
               return NotFound();
           }
-            return await _context.Crops.ToListAsync();
+            var crops= await _context.Crops.ToListAsync();
+            var cropsDto = mapper.Map<IEnumerable<GetCropDto>>(crops);
+            return Ok(cropsDto);
         }
 
         // GET: api/Crops/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Crop>> GetCrop(int id)
+        public async Task<ActionResult<GetCropDto>> GetCrop(int id)
         {
           if (_context.Crops == null)
           {
@@ -45,47 +52,21 @@ namespace CropDealWebAPI.Controllers
             {
                 return NotFound();
             }
+            
+            var cropDto = mapper.Map<GetCropDto>(crop);
+          
 
-            return crop;
+            return cropDto;
         }
 
-        // PUT: api/Crops/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCrop(int id, Crop crop)
-        {
-            if (id != crop.CropId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(crop).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CropExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // POST: api/Crops
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Crop>> PostCrop(Crop crop)
+        public async Task<ActionResult<CreateCropDto>> PostCrop(CreateCropDto cropDto)
         {
-          if (_context.Crops == null)
+            var crop = mapper.Map<Crop>(cropDto);
+            if (_context.Crops == null)
           {
               return Problem("Entity set 'CropDealContext.Crops'  is null.");
           }

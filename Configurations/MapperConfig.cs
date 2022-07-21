@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CropDealWebAPI.Dtos.Crop;
 using CropDealWebAPI.Dtos.UserProfile;
 using CropDealWebAPI.Models;
 
@@ -11,6 +12,9 @@ namespace CropDealWebAPI.Configurations
             CreateMap<CreateUserDto, UserProfile>().ReverseMap();
             CreateMap<UpdateUserDto, UserProfile>().ReverseMap();
             CreateMap<GetUserDto, UserProfile>().ReverseMap();
+            CreateMap<GetCropDto, Crop>().ReverseMap();
+            CreateMap<CreateCropDto, Crop>().ReverseMap();
+
         }
     }
 }
