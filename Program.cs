@@ -19,6 +19,12 @@ builder.Services.AddScoped<IRepository<Crop, int>, CropRepository>();
 builder.Services.AddScoped<CropService, CropService>();
 builder.Services.AddScoped<IRepository<CropOnSale, int>, CropOnSaleRepository>();
 builder.Services.AddScoped<CropOnSaleService, CropOnSaleService>();
+builder.Services.AddScoped<IRepository<CropOnSale, int>, CropOnSaleRepository>();
+builder.Services.AddScoped<CropOnSaleService, CropOnSaleService>();
+builder.Services.AddScoped<IViewCropRepository, ViewCrops>();
+builder.Services.AddScoped<ViewCropService,ViewCropService>();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

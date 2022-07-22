@@ -9,5 +9,6 @@
         public int CropQty { get; set; }
         public decimal CropPrice { get; set; }
         public int FarmerId { get; set; }
+        public string FarmerAddress { get; set; }
     }
 }
