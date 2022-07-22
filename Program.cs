@@ -15,6 +15,10 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("dbconn")));
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddScoped<IRepository<UserProfile,int>, UserProfileRepository>();
 builder.Services.AddScoped<UserProfileService, UserProfileService>();
+builder.Services.AddScoped<IRepository<Crop, int>, CropRepository>();
+builder.Services.AddScoped<CropService, CropService>();
+builder.Services.AddScoped<IRepository<CropOnSale, int>, CropOnSaleRepository>();
+builder.Services.AddScoped<CropOnSaleService, CropOnSaleService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

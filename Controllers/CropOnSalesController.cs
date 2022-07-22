@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CropDealWebAPI.Models;
+using CropDealWebAPI.Dtos.CropOnSale;
+using AutoMapper;
+using CropDealWebAPI.Service;
 
 namespace CropDealWebAPI.Controllers
 {
@@ -13,111 +16,141 @@ namespace CropDealWebAPI.Controllers
     [ApiController]
     public class CropOnSalesController : ControllerBase
     {
-        private readonly CropDealContext _context;
+        private readonly CropOnSaleService _Service;
 
-        public CropOnSalesController(CropDealContext context)
+        private readonly IMapper mapper;
+
+        public CropOnSalesController(CropOnSaleService service , IMapper mapper)
         {
-            _context = context;
+            _Service = service;
+            this.mapper = mapper;
         }
 
         // GET: api/CropOnSales
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CropOnSale>>> GetCropOnSales()
+       [HttpGet]
+        public async Task<ActionResult<IEnumerable<GetCropOnSaleDto>>> GetCropOnSales()
         {
-          if (_context.CropOnSales == null)
-          {
-              return NotFound();
-          }
-            return await _context.CropOnSales.ToListAsync();
+            try
+            {
+
+                var croponsale = await _Service.GetCropOnSale();
+                var cropsDto = mapper.Map<IEnumerable<GetCropOnSaleDto>>(croponsale);
+                return Ok(cropsDto);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            finally
+            {
+
+            }
         }
 
         // GET: api/CropOnSales/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CropOnSale>> GetCropOnSale(int id)
+        public async Task<ActionResult<GetCropOnSaleDto>> GetCropOnSale(int id)
         {
-          if (_context.CropOnSales == null)
-          {
-              return NotFound();
-          }
-            var cropOnSale = await _context.CropOnSales.FindAsync(id);
-
-            if (cropOnSale == null)
-            {
-                return NotFound();
-            }
-
-            return cropOnSale;
-        }
-
-        // PUT: api/CropOnSales/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCropOnSale(int id, CropOnSale cropOnSale)
-        {
-            if (id != cropOnSale.CropAdId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(cropOnSale).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CropOnSaleExists(id))
+
+                var crop = await _Service.GetCropOnSaleById(id);
+
+                if (crop == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                var cropDto = mapper.Map<GetCropOnSaleDto>(crop);
+                return cropDto;
             }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
 
-            return NoContent();
+            };
         }
 
+        
         // POST: api/CropOnSales
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<CropOnSale>> PostCropOnSale(CropOnSale cropOnSale)
+        public async Task<ActionResult<CreateCropOnSaleDto>> PostCropOnSale(CreateCropOnSaleDto cropOnSale)
         {
-          if (_context.CropOnSales == null)
-          {
-              return Problem("Entity set 'CropDealContext.CropOnSales'  is null.");
-          }
-            _context.CropOnSales.Add(cropOnSale);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCropOnSale", new { id = cropOnSale.CropAdId }, cropOnSale);
+            try
+            {
+                var crop = mapper.Map<CropOnSale>(cropOnSale);
+                if (_Service == null)
+                {
+                    return Problem("Entity set 'CropDealContext.CropOnSales'  is null.");
+                }
+                var res = _Service.CreateCropOnSale(crop);
+                if (res == null)
+                {
+                    return BadRequest();
+                }
+
+                return CreatedAtAction("GetCropOnSales", new { id = crop.CropAdId }, crop);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally { }
         }
 
         // DELETE: api/CropOnSales/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCropOnSale(int id)
         {
-            if (_context.CropOnSales == null)
+            try
             {
-                return NotFound();
+                if (_Service == null)
+                {
+                    return NotFound();
+                }
+                var crops = await _Service.GetCropOnSaleById(id);
+                if (crops == null)
+                {
+                    return NotFound();
+                }
+
+                var result = _Service.DeleteCropOnSale(crops);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+
+                return NoContent();
             }
-            var cropOnSale = await _context.CropOnSales.FindAsync(id);
-            if (cropOnSale == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                throw;
             }
+            finally
+            {
 
-            _context.CropOnSales.Remove(cropOnSale);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            }
         }
 
         private bool CropOnSaleExists(int id)
         {
-            return (_context.CropOnSales?.Any(e => e.CropAdId == id)).GetValueOrDefault();
+            try
+            {
+                return _Service.CropOnSaleExists(id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+
+            }
         }
     }
 }
