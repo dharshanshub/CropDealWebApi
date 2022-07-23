@@ -7,6 +7,14 @@ namespace CropDealWebAPI.Repository
     {
         CropDealContext _context;
         public CropOnSaleRepository(CropDealContext context) => _context = context;
+
+
+        #region PostCropOnSale
+        /// <summary>
+        /// this method is used by farmers to put their  crops on Sale
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public async Task<int> CreateAsync(CropOnSale item)
         {
             try
@@ -25,39 +33,130 @@ namespace CropDealWebAPI.Repository
 
             }
         }
+        #endregion
+
+        #region DeleteCrops
+        /// <summary>
+        /// this method is used to delete crops on sale
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
 
         public async Task<int> DeleteAsync(CropOnSale item)
         {
-            _context.CropOnSales.Remove(item);
-            await _context.SaveChangesAsync();
-            var response = StatusCodes.Status200OK;
-            return response;
-        }
+            try
+            {
+                _context.CropOnSales.Remove(item);
+                await _context.SaveChangesAsync();
+                var response = StatusCodes.Status200OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
 
+            }
+        }
+        #endregion
+
+        #region CropExists
+        /// <summary>
+        /// Used check wheather crops Exists
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public bool Exists(int id)
         {
-            return (_context.CropOnSales?.Any(e => e.CropAdId == id)).GetValueOrDefault();
-        }
+            try
+            {
+                return (_context.CropOnSales?.Any(e => e.CropAdId == id)).GetValueOrDefault();
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
 
+            }
+        }
+        #endregion
+
+        #region GetAllCrops
+        /// <summary>
+        /// this method is used to get all crops
+        /// </summary>
+        /// <returns></returns>
 
         public async Task<IEnumerable<CropOnSale>> GetAsync()
         {
-            return await _context.CropOnSales.AsNoTracking().ToListAsync();
-        }
+            try
+            {
+                return await _context.CropOnSales.AsNoTracking().ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
 
+            }
+        }
+        #endregion
+
+        #region GetCropsbyId
+        /// <summary>
+        /// this method is used to get crops by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<CropOnSale> GetIdAsync(int id)
         {
-            return await _context.CropOnSales
-                 .AsNoTracking()
-                 .FirstOrDefaultAsync(c => c.CropAdId == id);
+            try
+            {
+                return await _context.CropOnSales
+                     .AsNoTracking()
+                     .FirstOrDefaultAsync(c => c.CropAdId == id);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+
+            }
         }
+        #endregion
+
+        #region UpdateCrops
+        /// <summary>
+        /// update crops 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
 
         public async Task<int> UpdateAsync(CropOnSale item)
         {
-            _context.Entry(item).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            var response = StatusCodes.Status200OK;
-            return response;
+            try
+            {
+                _context.Entry(item).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                var response = StatusCodes.Status200OK;
+                return response;
+            }catch(Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+
+            }
         }
+        #endregion
     }
 }

@@ -6,6 +6,12 @@ namespace CropDealWebAPI.Repository
     {
         CropDealContext _context;
         public ViewCrops(CropDealContext context) => _context = context;
+
+        #region ViewCropsAd
+        /// <summary>
+        /// this method is used to view the crops posted by the famers
+        /// </summary>
+        /// <returns></returns>
         public List<ViewCrop> ViewCropsAsync()
         {
             try
@@ -40,5 +46,6 @@ namespace CropDealWebAPI.Repository
 
 
         }
+        #endregion
     }
 }

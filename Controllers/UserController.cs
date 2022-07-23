@@ -14,16 +14,27 @@ namespace CropDealWebAPI.Controllers
             _context = context;
 
         }
+
         [HttpPut("{id}")]
         public IActionResult ChangeUserStatus(int id, string UserStatus)
         {
-            (from p in _context.UserProfiles
-             where p.UserId == id
-             select p).ToList()
-                    .ForEach(x => x.UserStatus = UserStatus);
+            try
+            {
+                (from p in _context.UserProfiles
+                 where p.UserId == id
+                 select p).ToList()
+                        .ForEach(x => x.UserStatus = UserStatus);
 
-                 _context.SaveChanges();
-            return Ok();
+                _context.SaveChanges();
+                return Ok();
+            }catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+
+            }
         }
     }
 }
