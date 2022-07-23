@@ -14,5 +14,15 @@ namespace CropDealWebAPI.Service
         {
             return _repository.AddPayment(payment);
         }
+
+        public List<Invoice> ViewInvoiceAsync(int UserId)
+        {
+            return _repository.ViewInvoiceAsync(UserId);
+        }
+        public List<Invoice> ViewDealerInvoiceAsync(int UserId)
+        {
+            return _repository.ViewDealerInvoiceAsync(UserId);
+        }
+
     }
 }

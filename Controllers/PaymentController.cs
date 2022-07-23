@@ -23,5 +23,18 @@ namespace CropDealWebAPI.Controllers
             return Ok( _Service.AddPayment(payment));
 
         }
+        [HttpGet("FarmerInvoice")]
+        public List<Invoice> GetInvoice(int UserId)
+        {
+            return _Service.ViewInvoiceAsync(UserId);
+
+        }
+        [HttpGet("DealerInvoice")]
+        public List<Invoice> GetDealerInvoice(int UserId)
+        {
+            return _Service.ViewDealerInvoiceAsync(UserId);
+
+        }
+
     }
 }

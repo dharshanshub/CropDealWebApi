@@ -23,7 +23,7 @@ builder.Services.AddScoped<IRepository<CropOnSale, int>, CropOnSaleRepository>()
 builder.Services.AddScoped<CropOnSaleService, CropOnSaleService>();
 builder.Services.AddScoped<IViewCropRepository, ViewCrops>();
 builder.Services.AddScoped<ViewCropService,ViewCropService>();
-builder.Services.AddScoped<IPaymentRepository, PaymentC>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepo>();
 builder.Services.AddScoped<PaymentService, PaymentService>();
 
 
