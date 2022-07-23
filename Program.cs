@@ -23,6 +23,8 @@ builder.Services.AddScoped<IRepository<CropOnSale, int>, CropOnSaleRepository>()
 builder.Services.AddScoped<CropOnSaleService, CropOnSaleService>();
 builder.Services.AddScoped<IViewCropRepository, ViewCrops>();
 builder.Services.AddScoped<ViewCropService,ViewCropService>();
+builder.Services.AddScoped<IPaymentRepository, PaymentC>();
+builder.Services.AddScoped<PaymentService, PaymentService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
