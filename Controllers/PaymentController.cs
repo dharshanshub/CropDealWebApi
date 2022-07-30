@@ -1,5 +1,6 @@
 ﻿using CropDealWebAPI.Models;
 using CropDealWebAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,18 +18,22 @@ namespace CropDealWebAPI.Controllers
             _Service = service;
         }
 
+        [Authorize(Roles = "Dealer")]
+
         [HttpPost]
-        public IActionResult AddPayment(Payment payment)
+        public async Task<IActionResult> AddPayment(Payment payment)
         {
-            return Ok( _Service.AddPayment(payment));
+            return Ok( await _Service.AddPayment(payment));
 
         }
+        [Authorize]
         [HttpGet("FarmerInvoice")]
         public List<Invoice> GetInvoice(int UserId)
         {
             return _Service.ViewInvoiceAsync(UserId);
 
         }
+        [Authorize]
         [HttpGet("DealerInvoice")]
         public List<Invoice> GetDealerInvoice(int UserId)
         {

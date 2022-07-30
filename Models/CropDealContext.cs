@@ -19,14 +19,15 @@ namespace CropDealWebAPI.Models
         public virtual DbSet<Admin> Admins { get; set; } = null!;
         public virtual DbSet<Crop> Crops { get; set; } = null!;
         public virtual DbSet<CropOnSale> CropOnSales { get; set; } = null!;
-        public virtual DbSet<CropStatus> CropStatuses { get; set; } = null!;
         public virtual DbSet<Invoice> Invoices { get; set; } = null!;
         public virtual DbSet<UserProfile> UserProfiles { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
 
-            
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,11 +38,11 @@ namespace CropDealWebAPI.Models
 
                 entity.Property(e => e.AdminId).HasColumnName("AdminID");
 
-                entity.Property(e => e.AdminPassword)
+                entity.Property(e => e.AdminEmail)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.AdminUsername)
+                entity.Property(e => e.AdminPassword)
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
@@ -50,9 +51,7 @@ namespace CropDealWebAPI.Models
             {
                 entity.Property(e => e.CropId).HasColumnName("CropID");
 
-                entity.Property(e => e.CropImage)
-                    .HasMaxLength(350)
-                    .IsUnicode(false);
+                entity.Property(e => e.CropImage).IsUnicode(false);
 
                 entity.Property(e => e.CropName)
                     .HasMaxLength(50)
@@ -90,42 +89,6 @@ namespace CropDealWebAPI.Models
                     .HasForeignKey(d => d.FarmerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CropOnSale_CropOnSale");
-            });
-
-            modelBuilder.Entity<CropStatus>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("CropStatus");
-
-                entity.Property(e => e.CropAdId).HasColumnName("CropAdID");
-
-                entity.Property(e => e.CropStatus1)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("CropStatus");
-
-                entity.Property(e => e.DealerId).HasColumnName("DealerID");
-
-                entity.Property(e => e.FarmerId).HasColumnName("FarmerID");
-
-                entity.HasOne(d => d.CropAd)
-                    .WithMany()
-                    .HasForeignKey(d => d.CropAdId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CropStatus_CropAd");
-
-                entity.HasOne(d => d.Dealer)
-                    .WithMany()
-                    .HasForeignKey(d => d.DealerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CropStatus_Dealer");
-
-                entity.HasOne(d => d.Farmer)
-                    .WithMany()
-                    .HasForeignKey(d => d.FarmerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CropStatus_UserProfile");
             });
 
             modelBuilder.Entity<Invoice>(entity =>
@@ -189,10 +152,6 @@ namespace CropDealWebAPI.Models
                     .HasColumnName("UserIFSC");
 
                 entity.Property(e => e.UserName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPassword)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 

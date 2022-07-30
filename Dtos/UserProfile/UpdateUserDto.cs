@@ -1,6 +1,6 @@
 ﻿namespace CropDealWebAPI.Dtos.UserProfile
 {
-    public class UpdateUserDto:BaseUserDto
+    public class UpdateUserDto
     {
         
        
@@ -10,7 +10,7 @@
      
         public string UserEmail { get; set; }
       
-        public string UserPassword { get; set; }
+      
        
        
        

@@ -19,36 +19,109 @@ namespace CropDealWebAPI.Controllers
         {
             _context = context;
         }
-
+        #region Get Invoices
+        /// <summary>
+        /// this method is used to Get Invoices
+        /// </summary>
+        
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         // GET: api/Invoices
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
         {
-          if (_context.Invoices == null)
-          {
-              return NotFound();
-          }
-            return await _context.Invoices.ToListAsync();
-        }
+            try
+            {
+                if (_context.Invoices == null)
+                {
+                    return NotFound();
+                }
+                return await _context.Invoices.ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at GetInvoices in Invoice");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
 
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
+            }
+            finally { }
+        }
+        #endregion
+
+        #region Get Invoice By ID
+        /// <summary>
+        /// this method is used to get invoice by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         // GET: api/Invoices/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Invoice>> GetInvoice(int id)
         {
-          if (_context.Invoices == null)
-          {
-              return NotFound();
-          }
-            var invoice = await _context.Invoices.FindAsync(id);
-
-            if (invoice == null)
+            try
             {
-                return NotFound();
+                if (_context.Invoices == null)
+                {
+                    return NotFound();
+                }
+                var invoice = await _context.Invoices.FindAsync(id);
+
+                if (invoice == null)
+                {
+                    return NotFound();
+                }
+
+                return invoice;
             }
+            catch (Exception ex)
+            {
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at GetInvoicesById in Invoice");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
 
-            return invoice;
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
+            }
+            finally { }
+
         }
+        #endregion
 
+        #region UpdateInvoice
+        /// <summary>
+        /// this method is used to update invoice
+        /// </summary>
+        /// <param name="id, invoice"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         // PUT: api/Invoices/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -66,59 +139,169 @@ namespace CropDealWebAPI.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!InvoiceExists(id))
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
                 {
-                    return NotFound();
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at PutInvoices in Invoice");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
                 }
-                else
-                {
-                    throw;
-                }
+                return null;
             }
+            finally { }
 
             return NoContent();
         }
+        #endregion
 
+        #region PostInvoice
+        /// <summary>
+        /// this method is used to create invoice
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         // POST: api/Invoices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
-          if (_context.Invoices == null)
-          {
-              return Problem("Entity set 'CropDealContext.Invoices'  is null.");
-          }
-            _context.Invoices.Add(invoice);
-            await _context.SaveChangesAsync();
+            try {
+                if (_context.Invoices == null)
+                {
+                    return Problem("Entity set 'CropDealContext.Invoices'  is null.");
+                }
+                _context.Invoices.Add(invoice);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetInvoice", new { id = invoice.InvoiceId }, invoice);
+                return CreatedAtAction("GetInvoice", new { id = invoice.InvoiceId }, invoice);
+            }
+              catch (Exception ex)
+            {
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at PostInvoice in Invoice");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
+            }
+            finally { }
         }
+        #endregion
 
+        #region DeleteInvoice
+        /// <summary>
+        /// this method is used to delete invoice
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         // DELETE: api/Invoices/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
-            if (_context.Invoices == null)
+            try
             {
-                return NotFound();
-            }
-            var invoice = await _context.Invoices.FindAsync(id);
-            if (invoice == null)
-            {
-                return NotFound();
-            }
+                if (_context.Invoices == null)
+                {
+                    return NotFound();
+                }
+                var invoice = await _context.Invoices.FindAsync(id);
+                if (invoice == null)
+                {
+                    return NotFound();
+                }
 
-            _context.Invoices.Remove(invoice);
-            await _context.SaveChangesAsync();
+                _context.Invoices.Remove(invoice);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at DeleteInvoice in Invoice");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
+            }
+            finally { }
 
             return NoContent();
         }
+        #endregion
 
+        #region InvoiceExists
+        /// <summary>
+        /// this method is used to check the existence of invoice
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         private bool InvoiceExists(int id)
         {
-            return (_context.Invoices?.Any(e => e.InvoiceId == id)).GetValueOrDefault();
+            try
+            {
+                return (_context.Invoices?.Any(e => e.InvoiceId == id)).GetValueOrDefault();
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at InvoiceExists in Invoice");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return false;
+            }
+            finally { }
         }
+        #endregion
     }
 }

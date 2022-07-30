@@ -20,5 +20,8 @@
         public string UserBankName { get; set; }
  
         public string UserType { get; set; }
+
+        public string? UserStatus { get; set; }
+
     }
 }

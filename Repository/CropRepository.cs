@@ -27,12 +27,30 @@ namespace CropDealWebAPI.Repository
             }
             catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at CreateAsync in Crop");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return 404;
             }
             finally
             {
 
             }
+           
         }
         #endregion
 
@@ -54,9 +72,27 @@ namespace CropDealWebAPI.Repository
             }
             catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at DeleteAsync in Crop");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return 404;
             }
             finally { }
+            
         }
         #endregion
 
@@ -74,12 +110,30 @@ namespace CropDealWebAPI.Repository
             }
             catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at Exists method in Crop");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return false;
             }
             finally
             {
 
             }
+           
         }
         #endregion
 
@@ -99,12 +153,30 @@ namespace CropDealWebAPI.Repository
                      .FirstOrDefaultAsync(c => c.CropId == id);
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at GetIdAsync in Crop");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
             }
             finally
             {
 
             }
+           
         }
         #endregion
 
@@ -125,7 +197,24 @@ namespace CropDealWebAPI.Repository
                 return response;
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at UpdateAsync in Crop");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return 404;
             }
             finally
             {
@@ -148,7 +237,24 @@ namespace CropDealWebAPI.Repository
                 return await _context.Crops.AsNoTracking().ToListAsync();
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at GetAsync in Crop");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
             }
             finally { }
         }

@@ -10,9 +10,9 @@ namespace CropDealWebAPI.Service
         {
             _repository = repository;
         }
-        public string AddPayment(Payment payment)
+        public async Task<string> AddPayment(Payment payment)
         {
-            return _repository.AddPayment(payment);
+            return await _repository.AddPayment(payment);
         }
 
         public List<Invoice> ViewInvoiceAsync(int UserId)

@@ -1,4 +1,5 @@
-﻿using CropDealWebAPI.Models;
+﻿using CropDealWebAPI.Dtos.UserProfile;
+using CropDealWebAPI.Models;
 using CropDealWebAPI.Repository;
 
 namespace CropDealWebAPI.Service
@@ -19,10 +20,7 @@ namespace CropDealWebAPI.Service
         {
             return await _repository.GetIdAsync(id);
         }
-        public Task<int>  CreateUser(UserProfile userProfile)
-        {
-            return _repository.CreateAsync(userProfile);   
-        }
+        
         public Task<int> UpdateUser(UserProfile userProfile)
         {
             return  _repository.UpdateAsync(userProfile);

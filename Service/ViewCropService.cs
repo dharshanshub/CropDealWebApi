@@ -14,5 +14,10 @@ namespace CropDealWebAPI.Service
         {
             return _repository.ViewCropsAsync();
         }
+
+        public List<ViewCrop> ViewFarmerCrops(UserId id)
+        {
+            return _repository.ViewFarmerCropsAsync(id);
+        }
     }
 }

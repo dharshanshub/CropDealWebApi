@@ -9,6 +9,7 @@ using CropDealWebAPI.Models;
 using CropDealWebAPI.Dtos.CropOnSale;
 using AutoMapper;
 using CropDealWebAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CropDealWebAPI.Controllers
 {
@@ -74,9 +75,10 @@ namespace CropDealWebAPI.Controllers
             };
         }
 
-        
+
         // POST: api/CropOnSales
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Farmer")]
         [HttpPost]
         public async Task<ActionResult<CreateCropOnSaleDto>> PostCropOnSale(CreateCropOnSaleDto cropOnSale)
         {

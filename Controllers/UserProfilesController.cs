@@ -10,6 +10,7 @@ using CropDealWebAPI.Dtos.UserProfile;
 using AutoMapper;
 using CropDealWebAPI.Repository;
 using CropDealWebAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CropDealWebAPI.Controllers
 {
@@ -21,12 +22,14 @@ namespace CropDealWebAPI.Controllers
        
         private readonly IMapper mapper;
         private readonly UserProfileService _Service;
+        private readonly RegisterService _RegisterService;
 
-        public UserProfilesController( IMapper mapper,UserProfileService service )
+        public UserProfilesController( IMapper mapper,UserProfileService service,RegisterService registerService )
         {
             
             this.mapper = mapper;
             _Service = service;
+            _RegisterService = registerService;
         }
         #region GetUserProfile
         /// <summary>
@@ -34,6 +37,7 @@ namespace CropDealWebAPI.Controllers
         /// </summary>
         /// <returns></returns>
         // GET: api/UserProfiles
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUserProfiles()
         {
@@ -65,7 +69,9 @@ namespace CropDealWebAPI.Controllers
         /// <returns></returns>
 
         // GET: api/UserProfiles/5
+        [Authorize]
         [HttpGet("{id}")]
+
         public async Task<ActionResult<GetUserDto>> GetUserProfile(int id)
         {
             try
@@ -99,16 +105,14 @@ namespace CropDealWebAPI.Controllers
 
         // PUT: api/UserProfiles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPut("{id}")]
+
         public async Task<IActionResult> PutUserProfile(int id, UpdateUserDto userProfileDto)
         {
             try
             {
-                if (id != userProfileDto.UserId)
-                {
-                    return BadRequest();
-
-                }
+              
                 var userProfile = await _Service.GetUserById(id);
                 if (userProfile == null)
                 {
@@ -152,23 +156,29 @@ namespace CropDealWebAPI.Controllers
 
         // POST: api/UserProfiles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<CreateUserDto>> PostUserProfile(CreateUserDto userProfileDto)
+        public async Task<ActionResult<UserProfile>> PostUserProfile(CreateUserDto userProfileDto)
         {
             try
             {
-                var userProfile = mapper.Map<UserProfile>(userProfileDto);
+                if( UserProfileExists(userProfileDto))
+                {
+                    return BadRequest("User Already Exists");
+
+                }
+                
                 if (_Service == null)
                 {
                     return Problem("Entity set 'CropDealContext.UserProfiles'  is null.");
                 }
-               var res=  _Service.CreateUser(userProfile);
+               var res= await _RegisterService.RegisterUser(userProfileDto);
                 if (res == null)
                 {
                     return BadRequest();
                 }
 
-                return CreatedAtAction("GetUserProfile", new { id = userProfile.UserId }, userProfile);
+                return Ok(res);
             }
             catch(Exception ex)
             {
@@ -186,6 +196,7 @@ namespace CropDealWebAPI.Controllers
 
         // DELETE: api/UserProfiles/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserProfile(int id)
         {
             try
@@ -224,11 +235,11 @@ namespace CropDealWebAPI.Controllers
         /// </summary>
         /// <returns></returns>
 
-        private bool UserProfileExists(int id)
+        private bool UserProfileExists(CreateUserDto email)
         {
             try
             {
-                return _Service.UserExists(id);
+                return _RegisterService.UserExisits(email);
             }catch (Exception ex)
             {
                 throw;

@@ -1,4 +1,5 @@
 ﻿using CropDealWebAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CropDealWebAPI.Repository
 {
@@ -13,7 +14,7 @@ namespace CropDealWebAPI.Repository
         /// </summary>
         /// <param name="payment"></param>
         /// <returns></returns>
-        public string AddPayment(Payment payment)
+        public async Task<string> AddPayment(Payment payment)
         {
             try
             {
@@ -51,8 +52,9 @@ namespace CropDealWebAPI.Repository
 
                 }
 
-                if (AddInvoice(invoice1))
+                if (await AddInvoice(invoice1,Crpid))
                 {
+                   
                     return "200";
                 }
                 else
@@ -61,7 +63,26 @@ namespace CropDealWebAPI.Repository
                 }
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at AddPayment in Payment");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+
+
+                }
+                return null;
             }
             finally
             {
@@ -69,21 +90,75 @@ namespace CropDealWebAPI.Repository
             }
 
         }
-        public bool AddInvoice(Invoice invoice)
+        public  async Task<bool> AddInvoice(Invoice invoice ,int crpid)
         {
             try
             {
                 _context.Invoices.Add(invoice);
-                _context.SaveChangesAsync();
+              await  _context.SaveChangesAsync();
+
+               await DeleteCrop(crpid);
+                
+               
                 var response = true;
                 return response;
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at AddInvoice in Payment");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return false;
             }
             finally
             {
 
+            }
+        }
+        public async Task<bool> DeleteCrop (int crpid)
+        {
+            try
+            {
+                var crop = await _context.CropOnSales
+                            .FirstOrDefaultAsync(x => x.CropAdId == crpid);
+
+                _context.CropOnSales.Remove(crop);
+                _context.SaveChangesAsync();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at DeleteCrop in Payment");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return false;
             }
         }
         #endregion
@@ -123,7 +198,9 @@ namespace CropDealWebAPI.Repository
                                   CropType = b.CropType,
                                   OrderTotal = b.OrderTotal,
                                   InvoiceDate = b.InvoiceDate,
-                                  FarmerAccNumber = b.FarmerAccNumber
+                                  FarmerAccNumber = b.FarmerAccNumber,
+                                  DealerAccNumber = b.DealerAccNumber
+
 
 
                               };
@@ -135,7 +212,24 @@ namespace CropDealWebAPI.Repository
                 return null;
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at ViewInvoiceAsync in Payment");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
             }
             finally
             {
@@ -182,7 +276,8 @@ namespace CropDealWebAPI.Repository
                                   CropType = b.CropType,
                                   OrderTotal = b.OrderTotal,
                                   InvoiceDate = b.InvoiceDate,
-                                  DealerAccNumber = b.DealerAccNumber
+                                  DealerAccNumber = b.DealerAccNumber,
+                                 FarmerAccNumber = b.FarmerAccNumber
 
 
                               };
@@ -193,9 +288,26 @@ namespace CropDealWebAPI.Repository
                 }
                 return null;
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at ViewDealerInvoice in Payment");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
             }
             finally { }
 

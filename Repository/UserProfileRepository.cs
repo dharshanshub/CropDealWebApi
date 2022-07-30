@@ -1,6 +1,9 @@
 ﻿
+using CropDealWebAPI.Dtos.UserProfile;
 using CropDealWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace CropDealWebAPI.Repository
 {
@@ -10,29 +13,16 @@ namespace CropDealWebAPI.Repository
         
         public UserProfileRepository(CropDealContext context) => _context = context;
 
+
+
         #region CreateUser
         /// <summary>
         /// this method is used to create user
         /// </summary>
         /// <param name="context"></param>
-        public async Task<int> CreateAsync(UserProfile userProfile)
+        public Task<int> CreateAsync(UserProfile item)
         {
-            try
-            {
-
-                _context.UserProfiles.Add(userProfile);
-                await _context.SaveChangesAsync();
-                var response = StatusCodes.Status201Created;
-                return response;
-            }catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
-
-            }
-
+            throw new NotImplementedException();
         }
         #endregion
 
@@ -52,7 +42,24 @@ namespace CropDealWebAPI.Repository
                 return response;
             }catch(Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at DeleteAsync in UserProfile");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return 404;
             }
             finally { }
         }
@@ -65,14 +72,31 @@ namespace CropDealWebAPI.Repository
         /// <param name="id"></param>
         /// <returns></returns>
 
-        public bool Exists(int id)
+        public bool Exists(int email)
         {
             try
             {
-                return (_context.UserProfiles?.Any(e => e.UserId == id)).GetValueOrDefault();
+                return (_context.UserProfiles?.Any(e => e.UserId == email)).GetValueOrDefault();
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at Exists Method in UserProfile");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return false;
             }
             finally
             {
@@ -95,7 +119,24 @@ namespace CropDealWebAPI.Repository
             }
             catch(Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at GetAsync in UserProfile");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
             }
             finally
             {
@@ -121,7 +162,24 @@ namespace CropDealWebAPI.Repository
                     .FirstOrDefaultAsync(c => c.UserId == id);
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at GetIdAsync in UserProfile");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return null;
             }
             finally
             {
@@ -130,7 +188,7 @@ namespace CropDealWebAPI.Repository
         }
         #endregion
 
-        #region
+        #region UpdateAsync
         /// <summary>
         /// this method is used to update User
         /// </summary>
@@ -147,7 +205,24 @@ namespace CropDealWebAPI.Repository
                 return response;
             }catch (Exception ex)
             {
-                throw;
+                string filePath = @"D:\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Error Caused at UpdateAsync in UserProfile");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
+                return 404;
             }
             finally { }
 
