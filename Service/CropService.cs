@@ -19,9 +19,9 @@ namespace CropDealWebAPI.Service
         {
             return await _repository.GetIdAsync(id);
         }
-        public Task<int> CreateCrop(Crop item)
+        public async Task<int> CreateCrop(Crop item)
         {
-            return _repository.CreateAsync(item);
+            return await _repository.CreateAsync(item);
         }
         public Task<int> UpdateCrop(Crop item)
         {

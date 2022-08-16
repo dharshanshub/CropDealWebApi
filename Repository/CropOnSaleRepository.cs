@@ -1,4 +1,5 @@
 ﻿using CropDealWebAPI.Models;
+using CropDealWebAPI.Service;
 using Microsoft.EntityFrameworkCore;
 
 namespace CropDealWebAPI.Repository
@@ -6,7 +7,13 @@ namespace CropDealWebAPI.Repository
     public class CropOnSaleRepository : IRepository<CropOnSale, int>
     {
         CropDealContext _context;
-        public CropOnSaleRepository(CropDealContext context) => _context = context;
+        ExceptionService _exception;
+        public CropOnSaleRepository(CropDealContext context, ExceptionService exception)
+        {
+            _context = context;
+            _exception = exception;
+
+        }
 
 
         #region PostCropOnSale
@@ -26,29 +33,16 @@ namespace CropDealWebAPI.Repository
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at CreateAsync in CropOnSale");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
-                return 404;
+                string causedAt = "Error casued At cropOnSaleRepository in  CreateAsync";
+                _exception.AddException(ex, causedAt,null);
             }
+
+
             finally
             {
 
             }
+            return 404;
         }
         #endregion
 
@@ -70,29 +64,16 @@ namespace CropDealWebAPI.Repository
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at DeleteAsync in CropOnSale");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
-                return 404;
+                string causedAt = "Error casued At CropOnSaleRepository in  DeleteAsync";
+                _exception.AddException(ex, causedAt,null);
             }
+
+
             finally
             {
 
             }
+            return 404;
         }
         #endregion
 
@@ -108,31 +89,17 @@ namespace CropDealWebAPI.Repository
             {
                 return (_context.CropOnSales?.Any(e => e.CropAdId == id)).GetValueOrDefault();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at Exists Method in CropOnSale");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
+                string causedAt = "Error casued At cropOnSaleRepository in  Exists";
+                _exception.AddException(ex, causedAt,null);
 
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
-                return false;
             }
             finally
             {
 
             }
+            return false;
         }
         #endregion
 
@@ -148,31 +115,17 @@ namespace CropDealWebAPI.Repository
             {
                 return await _context.CropOnSales.AsNoTracking().ToListAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at GetAsync in CropOnSale");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
+                string causedAt = "Error casued At cropOnSaleRepository in  GetAsync";
+                _exception.AddException(ex, causedAt,null);
 
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
-                return null;
             }
             finally
             {
 
             }
+            return null;
         }
         #endregion
 
@@ -190,26 +143,12 @@ namespace CropDealWebAPI.Repository
                      .AsNoTracking()
                      .FirstOrDefaultAsync(c => c.CropAdId == id);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at GetIdAsync in CropOnSale");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
 
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+                string causedAt = "Error casued At cropOnSaleRepository in  GetIdAsync";
+                _exception.AddException(ex, causedAt,null);
 
-                        ex = ex.InnerException;
-                    }
-
-                }
                 return null;
             }
             finally
@@ -234,27 +173,14 @@ namespace CropDealWebAPI.Repository
                 await _context.SaveChangesAsync();
                 var response = StatusCodes.Status200OK;
                 return response;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at UpdateAsync in CropOnSale");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At cropOnSaleRepository in  UpdateAsync";
+                _exception.AddException(ex, causedAt,null);
                 return 404;
             }
+
             finally
             {
 

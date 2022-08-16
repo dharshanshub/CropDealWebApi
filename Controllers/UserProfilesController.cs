@@ -19,14 +19,14 @@ namespace CropDealWebAPI.Controllers
     public class UserProfilesController : ControllerBase
 
     {
-       
+
         private readonly IMapper mapper;
         private readonly UserProfileService _Service;
         private readonly RegisterService _RegisterService;
 
-        public UserProfilesController( IMapper mapper,UserProfileService service,RegisterService registerService )
+        public UserProfilesController(IMapper mapper, UserProfileService service, RegisterService registerService)
         {
-            
+
             this.mapper = mapper;
             _Service = service;
             _RegisterService = registerService;
@@ -41,22 +41,12 @@ namespace CropDealWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUserProfiles()
         {
-            try
-            {
 
-                var users = await _Service.GetUser();
-                var usersDto = mapper.Map<IEnumerable<GetUserDto>>(users);
-                return Ok(usersDto);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
 
-            finally
-            {
+            var users = await _Service.GetUser();
+            var usersDto = mapper.Map<IEnumerable<GetUserDto>>(users);
+            return Ok(usersDto);
 
-            }
 
 
         }
@@ -74,26 +64,16 @@ namespace CropDealWebAPI.Controllers
 
         public async Task<ActionResult<GetUserDto>> GetUserProfile(int id)
         {
-            try
-            {
-                
-                var userProfile = await _Service.GetUserById(id);
 
-                if (userProfile == null)
-                {
-                    return NotFound();
-                }
-                var userDto = mapper.Map<GetUserDto>(userProfile);
-                return userDto;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
+            var userProfile = await _Service.GetUserById(id);
 
+            if (userProfile == null)
+            {
+                return NotFound();
             }
+            var userDto = mapper.Map<GetUserDto>(userProfile);
+            return userDto;
+
         }
         #endregion
 
@@ -105,46 +85,38 @@ namespace CropDealWebAPI.Controllers
 
         // PUT: api/UserProfiles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize]
+
         [HttpPut("{id}")]
 
         public async Task<IActionResult> PutUserProfile(int id, UpdateUserDto userProfileDto)
         {
-            try
+
+
+            var userProfile = await _Service.GetUserById(id);
+            if (userProfile == null)
             {
-              
-                var userProfile = await _Service.GetUserById(id);
-                if (userProfile == null)
-                {
-                    return NotFound();
-                }
-               
-
-                mapper.Map(userProfileDto, userProfile);
-               
-
-                if (_Service == null)
-                {
-                    return Problem("Entity set 'CropDealContext.UserProfiles'  is null.");
-                }
-
-                var val = _Service.UpdateUser(userProfile);
-                if (val == null)
-                {
-                    return BadRequest();
-                }
-                return NoContent();
-
-
+                return NotFound();
             }
-            catch (Exception ex)
+
+
+            mapper.Map(userProfileDto, userProfile);
+
+
+            if (_Service == null)
             {
-                throw;
+                return Problem("Entity set 'CropDealContext.UserProfiles'  is null.");
             }
-            finally
-            {
 
+            var val = await _Service.UpdateUser(userProfile);
+            if (val == null)
+            {
+                return BadRequest();
             }
+            return NoContent();
+
+
+
+
         }
         #endregion
 
@@ -160,31 +132,25 @@ namespace CropDealWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<UserProfile>> PostUserProfile(CreateUserDto userProfileDto)
         {
-            try
-            {
-                if( UserProfileExists(userProfileDto))
-                {
-                    return BadRequest("User Already Exists");
 
-                }
-                
-                if (_Service == null)
-                {
-                    return Problem("Entity set 'CropDealContext.UserProfiles'  is null.");
-                }
-               var res= await _RegisterService.RegisterUser(userProfileDto);
-                if (res == null)
-                {
-                    return BadRequest();
-                }
-
-                return Ok(res);
-            }
-            catch(Exception ex)
+            if (UserProfileExists(userProfileDto))
             {
-                throw;
+                return BadRequest("User Already Exists");
+
             }
-            finally { }
+
+            if (_Service == null)
+            {
+                return Problem("Entity set 'CropDealContext.UserProfiles'  is null.");
+            }
+            var res = await _RegisterService.RegisterUser(userProfileDto);
+            if (res == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(res);
+
         }
         #endregion
 
@@ -199,33 +165,25 @@ namespace CropDealWebAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserProfile(int id)
         {
-            try
-            {
-                if (_Service == null)
-                {
-                    return NotFound();
-                }
-                var userProfile = await _Service.GetUserById(id);
-                if (userProfile == null)
-                {
-                    return NotFound();
-                }
 
-               var result = _Service.DeleteUser(userProfile);
-                if (result == null)
-                {
-                    return BadRequest();
-                }
-
-                return NoContent();
-            }catch(Exception ex)
+            if (_Service == null)
             {
-                throw;
+                return NotFound();
             }
-            finally
+            var userProfile = await _Service.GetUserById(id);
+            if (userProfile == null)
             {
-
+                return NotFound();
             }
+
+            var result = _Service.DeleteUser(userProfile);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+
         }
         #endregion
 
@@ -237,17 +195,8 @@ namespace CropDealWebAPI.Controllers
 
         private bool UserProfileExists(CreateUserDto email)
         {
-            try
-            {
-                return _RegisterService.UserExisits(email);
-            }catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
+            return _RegisterService.UserExisits(email);
 
-            }
         }
         #endregion
     }

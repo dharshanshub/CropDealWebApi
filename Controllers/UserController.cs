@@ -15,28 +15,20 @@ namespace CropDealWebAPI.Controllers
             _context = context;
 
         }
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
 
         [HttpPost]
         public IActionResult ChangeUserStatus(ChangeUser user)
         {
-            try
-            {
-                (from p in _context.UserProfiles
-                 where p.UserId == user.userId
-                 select p).ToList()
-                        .ForEach(x => x.UserStatus = user.userStaus);
 
-                _context.SaveChanges();
-                return Ok();
-            }catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
+            (from p in _context.UserProfiles
+             where p.UserId == user.userId
+             select p).ToList()
+                    .ForEach(x => x.UserStatus = user.userStaus);
 
-            }
+            _context.SaveChanges();
+            return Ok();
+
         }
     }
 }

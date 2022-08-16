@@ -32,127 +32,90 @@ namespace CropDealWebAPI.Controllers
         public async Task<ActionResult<IEnumerable<GetCropDto>>> GetCrops()
         {
 
-            try
-            {
 
-                var crops = await _Service.GetCrop();
-                var cropsDto = mapper.Map<IEnumerable<GetCropDto>>(crops);
-                return Ok(cropsDto);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
 
-            finally
-            {
+            var crops = await _Service.GetCrop();
+            var cropsDto = mapper.Map<IEnumerable<GetCropDto>>(crops);
+            return Ok(cropsDto);
 
-            }
         }
 
         // GET: api/Crops/5
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<GetCropDto>> GetCrop(int id)
         {
-            try
+
+            var crop = await _Service.GetCropById(id);
+
+            if (crop == null)
             {
-
-                var crop = await _Service.GetCropById(id);
-
-                if (crop == null)
-                {
-                    return NotFound();
-                }
-                var cropDto = mapper.Map<GetCropDto>(crop);
-                return cropDto;
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
+            var cropDto = mapper.Map<GetCropDto>(crop);
+            return cropDto;
 
-            };
         }
 
 
         // POST: api/Crops
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(Roles = "Admin")]
+
+
+
         [HttpPost]
         public async Task<ActionResult<CreateCropDto>> PostCrop(CreateCropDto cropDto)
         {
-            try
-            {
-                var crop = mapper.Map<Crop>(cropDto);
-                if (_Service == null)
-                {
-                    return Problem("Entity set 'CropDealContext.Crops'  is null.");
-                }
-                var res = _Service.CreateCrop(crop);
-                if (res == null)
-                {
-                    return BadRequest();
-                }
 
-                return CreatedAtAction("GetCrop", new { id = crop.CropId }, crop);
-            }
-            catch (Exception ex)
+            var crop = mapper.Map<Crop>(cropDto);
+            if (_Service == null)
             {
-                throw;
+                return Problem("Entity set 'CropDealContext.Crops'  is null.");
             }
-            finally { }
+            var res = await _Service.CreateCrop(crop);
+            if (res == null)
+            {
+                return BadRequest();
+            }
+
+            return CreatedAtAction("GetCrop", new { id = crop.CropId }, crop);
         }
 
+
+
         // DELETE: api/Crops/5
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCrop(int id)
         {
-            try
-            {
-                if (_Service == null)
-                {
-                    return NotFound();
-                }
-                var crops = await _Service.GetCropById(id);
-                if (crops == null)
-                {
-                    return NotFound();
-                }
 
-                var result = _Service.DeleteCrop(crops);
-                if (result == null)
-                {
-                    return BadRequest();
-                }
-
-                return NoContent();
-            }
-            catch (Exception ex)
+            if (_Service == null)
             {
-                throw;
+                return NotFound();
             }
-            finally
+            var crops = await _Service.GetCropById(id);
+            if (crops == null)
             {
-
+                return NotFound();
             }
+
+            var result = _Service.DeleteCrop(crops);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+
         }
 
         private bool CropExists(int id)
         {
-            try
-            {
-                return _Service.CropExists(id);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
 
-            }
+            return _Service.CropExists(id);
+
         }
     }
 }

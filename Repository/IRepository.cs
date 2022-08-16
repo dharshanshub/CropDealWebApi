@@ -7,7 +7,7 @@
         Task<int> CreateAsync(TEntity item);
         Task<int> UpdateAsync(TEntity item);
         Task <int> DeleteAsync(TEntity item);
-        bool Exists(TKey id);
+       bool Exists(TKey id);
 
 
     }

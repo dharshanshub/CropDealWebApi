@@ -1,15 +1,22 @@
 ﻿using CropDealWebAPI.Dtos.UserProfile;
 using CropDealWebAPI.Models;
+using CropDealWebAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace CropDealWebAPI.Repository
 {
-    public class RegisterRepo:IRegisterRepository<CreateUserDto,UserProfile>
+    public class RegisterRepo : IRegisterRepository<CreateUserDto, UserProfile>
     {
         CropDealContext _context;
-        public RegisterRepo(CropDealContext context) => _context = context;
+        ExceptionService _exception;
+        public RegisterRepo(CropDealContext context, ExceptionService exception)
+        {
+            _context = context;
+            _exception = exception;
+        }
+
 
         #region RegisterUser
         /// <summary>
@@ -39,38 +46,32 @@ namespace CropDealWebAPI.Repository
                     UserPasswordSalt = hmac.Key
                 };
 
-               _context.UserProfiles.Add(user);
-               await _context.SaveChangesAsync();
-               return user;
+                _context.UserProfiles.Add(user);
+                await _context.SaveChangesAsync();
+                return user;
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error caused at CreateAsync in Register");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
+                string causedAt = "Error casued At Register in  CreateAsync";
+                _exception.AddException(ex, causedAt,null);
 
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
 
-                        ex = ex.InnerException;
-                    }
-                }
-
-                return null;
             }
             finally
             {
 
             }
+            return null;
 
         }
+        #endregion
+
+        #region userExists
+        /// <summary>
+        /// this method is used check user exsists or not
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
 
         public bool UserExists(CreateUserDto item)
         {
@@ -78,32 +79,17 @@ namespace CropDealWebAPI.Repository
             {
                 return (_context.UserProfiles?.Any(e => e.UserEmail == item.UserEmail)).GetValueOrDefault();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at UserExists in Register");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At Register in  UserExists";
+                _exception.AddException(ex, causedAt,null);
                 return false;
             }
             finally
             {
 
             }
-            }
+        }
         #endregion
     }
-    }
+}

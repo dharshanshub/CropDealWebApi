@@ -24,10 +24,11 @@ namespace CropDealWebAPI.Controllers
 
         public async Task<ActionResult<Token>> Login(Login item)
         {
-            
 
-           var res = await _Service.Login(item);
+
+            var res = await _Service.Login(item);
             int res1 = await _Service.GetUserId(item.Email);
+
 
 
             if (res == 200)
@@ -41,22 +42,22 @@ namespace CropDealWebAPI.Controllers
 
 
             }
-            else if(res == 404)
+            else if (res == 404)
             {
                 return BadRequest("You are not registered");
             }
-            else if(res== 401)
+            else if (res == 401)
             {
                 return Unauthorized("Password is wrong");
             }
             else
             {
-                return Unauthorized("Your account is blocked,please contact Admininstrator");
+                return BadRequest("Your account is blocked,please contact Admininstrator");
 
             }
         }
 
-       
+
 
     }
 }

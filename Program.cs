@@ -49,6 +49,8 @@ builder.Services.AddScoped<RegisterService, RegisterService>();
 builder.Services.AddScoped<ILoginRepository<Login, int>, LoginRepo>();
 builder.Services.AddScoped<LoginService, LoginService>();
 builder.Services.AddScoped<IToken,TokenRepo>();
+builder.Services.AddScoped<IExceptionRepositry ,ExceptionRepositry>();
+builder.Services.AddScoped<ExceptionService, ExceptionService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

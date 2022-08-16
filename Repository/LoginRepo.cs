@@ -1,4 +1,5 @@
 ﻿using CropDealWebAPI.Models;
+using CropDealWebAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -9,7 +10,12 @@ namespace CropDealWebAPI.Repository
     public class LoginRepo : ILoginRepository<Login, int>
     {
         CropDealContext _context;
-        public LoginRepo(CropDealContext context) => _context = context;
+        ExceptionService _exception;
+        public LoginRepo(CropDealContext context, ExceptionService exception)
+        {
+            _context = context;
+            _exception = exception;
+        }
 
         #region getuserId
         /// <summary>
@@ -22,8 +28,9 @@ namespace CropDealWebAPI.Repository
         {
             try
             {
-               var user = await _context.UserProfiles
-                        .SingleOrDefaultAsync(x => x.UserEmail == item);
+                var user = await _context.UserProfiles
+                         .SingleOrDefaultAsync(x => x.UserEmail == item);
+
                 if (user != null)
                 {
                     int userid = user.UserId;
@@ -37,23 +44,8 @@ namespace CropDealWebAPI.Repository
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at GetUserId in Login");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At LoginRepo in  GetUserId";
+                _exception.AddException(ex, causedAt,null);
                 return 404;
             }
             finally
@@ -133,26 +125,13 @@ namespace CropDealWebAPI.Repository
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at Login Method in Login");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At LoginRepo in  Login";
+                _exception.AddException(ex, causedAt,null);
                 return 404;
-                    
+
             }
+
+
             finally
             {
 

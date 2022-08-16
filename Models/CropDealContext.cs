@@ -19,6 +19,7 @@ namespace CropDealWebAPI.Models
         public virtual DbSet<Admin> Admins { get; set; } = null!;
         public virtual DbSet<Crop> Crops { get; set; } = null!;
         public virtual DbSet<CropOnSale> CropOnSales { get; set; } = null!;
+        public virtual DbSet<ExceptionLog> ExceptionLogs { get; set; } = null!;
         public virtual DbSet<Invoice> Invoices { get; set; } = null!;
         public virtual DbSet<UserProfile> UserProfiles { get; set; } = null!;
 
@@ -89,6 +90,19 @@ namespace CropDealWebAPI.Models
                     .HasForeignKey(d => d.FarmerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CropOnSale_CropOnSale");
+            });
+
+            modelBuilder.Entity<ExceptionLog>(entity =>
+            {
+                entity.ToTable("ExceptionLog");
+
+                entity.Property(e => e.Data).IsUnicode(false);
+
+                entity.Property(e => e.Date).HasColumnType("datetime");
+
+                entity.Property(e => e.ErrorDescription).IsUnicode(false);
+
+                entity.Property(e => e.StackTrace).IsUnicode(false);
             });
 
             modelBuilder.Entity<Invoice>(entity =>

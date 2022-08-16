@@ -25,7 +25,7 @@ namespace CropDealWebAPI.Controllers
         [Authorize(Roles = "Dealer")]
 
         [HttpGet]
-        public List<ViewCrop> GetCrops()
+        public  List<ViewCrop> GetCrops()
         {
             return _Service.ViewCrops();
 

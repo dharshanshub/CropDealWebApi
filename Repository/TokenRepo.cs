@@ -1,4 +1,5 @@
 ﻿using CropDealWebAPI.Models;
+using CropDealWebAPI.Service;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,11 +11,13 @@ namespace CropDealWebAPI.Repository
     {
         CropDealContext _context;
         private readonly IConfiguration _configuration;
+        ExceptionService _exception;
 
-        public TokenRepo(CropDealContext context, IConfiguration config)
+        public TokenRepo(CropDealContext context, IConfiguration config, ExceptionService exception)
         {
             _context = context;
            _configuration=config;
+            _exception = exception; 
         }
 
 
@@ -53,23 +56,8 @@ namespace CropDealWebAPI.Repository
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at CreateToken in Token");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At TokenRepo in  CreateToken";
+                _exception.AddException(ex, causedAt,null);
                 return null;
             }
             finally

@@ -21,58 +21,38 @@ namespace CropDealWebAPI.Controllers
 
         private readonly IMapper mapper;
 
-        public CropOnSalesController(CropOnSaleService service , IMapper mapper)
+        public CropOnSalesController(CropOnSaleService service, IMapper mapper)
         {
             _Service = service;
             this.mapper = mapper;
         }
 
         // GET: api/CropOnSales
-       [HttpGet]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<GetCropOnSaleDto>>> GetCropOnSales()
         {
-            try
-            {
 
-                var croponsale = await _Service.GetCropOnSale();
-                var cropsDto = mapper.Map<IEnumerable<GetCropOnSaleDto>>(croponsale);
-                return Ok(cropsDto);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
 
-            finally
-            {
+            var croponsale = await _Service.GetCropOnSale();
+            var cropsDto = mapper.Map<IEnumerable<GetCropOnSaleDto>>(croponsale);
+            return Ok(cropsDto);
 
-            }
         }
 
         // GET: api/CropOnSales/5
         [HttpGet("{id}")]
         public async Task<ActionResult<GetCropOnSaleDto>> GetCropOnSale(int id)
         {
-            try
+
+            var crop = await _Service.GetCropOnSaleById(id);
+
+            if (crop == null)
             {
-
-                var crop = await _Service.GetCropOnSaleById(id);
-
-                if (crop == null)
-                {
-                    return NotFound();
-                }
-                var cropDto = mapper.Map<GetCropOnSaleDto>(crop);
-                return cropDto;
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
+            var cropDto = mapper.Map<GetCropOnSaleDto>(crop);
+            return cropDto;
 
-            };
         }
 
 
@@ -83,76 +63,52 @@ namespace CropDealWebAPI.Controllers
         public async Task<ActionResult<CreateCropOnSaleDto>> PostCropOnSale(CreateCropOnSaleDto cropOnSale)
         {
 
-            try
-            {
-                var crop = mapper.Map<CropOnSale>(cropOnSale);
-                if (_Service == null)
-                {
-                    return Problem("Entity set 'CropDealContext.CropOnSales'  is null.");
-                }
-                var res = _Service.CreateCropOnSale(crop);
-                if (res == null)
-                {
-                    return BadRequest();
-                }
 
-                return CreatedAtAction("GetCropOnSales", new { id = crop.CropAdId }, crop);
-            }
-            catch (Exception ex)
+            var crop = mapper.Map<CropOnSale>(cropOnSale);
+            if (_Service == null)
             {
-                throw;
+                return Problem("Entity set 'CropDealContext.CropOnSales'  is null.");
             }
-            finally { }
+            var res = await _Service.CreateCropOnSale(crop);
+            if (res == null)
+            {
+                return BadRequest();
+            }
+
+            return CreatedAtAction("GetCropOnSales", new { id = crop.CropAdId }, crop);
+
         }
 
         // DELETE: api/CropOnSales/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCropOnSale(int id)
         {
-            try
-            {
-                if (_Service == null)
-                {
-                    return NotFound();
-                }
-                var crops = await _Service.GetCropOnSaleById(id);
-                if (crops == null)
-                {
-                    return NotFound();
-                }
 
-                var result = _Service.DeleteCropOnSale(crops);
-                if (result == null)
-                {
-                    return BadRequest();
-                }
-
-                return NoContent();
-            }
-            catch (Exception ex)
+            if (_Service == null)
             {
-                throw;
+                return NotFound();
             }
-            finally
+            var crops = await _Service.GetCropOnSaleById(id);
+            if (crops == null)
             {
-
+                return NotFound();
             }
+
+            var result = _Service.DeleteCropOnSale(crops);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+
         }
 
         private bool CropOnSaleExists(int id)
         {
-            try
-            {
-                return _Service.CropOnSaleExists(id);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
 
-            }
+            return _Service.CropOnSaleExists(id);
+
         }
     }
 }

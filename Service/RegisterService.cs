@@ -16,9 +16,9 @@ namespace CropDealWebAPI.Service
         {
             return await _repository.CreateAsync(createUserDto);
         }
-        public  bool UserExisits(CreateUserDto email)
+        public bool UserExisits(CreateUserDto email)
         {
-            return  _repository.UserExists(email);
+            return _repository.UserExists(email);
         }
     }
 }

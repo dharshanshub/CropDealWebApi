@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CropDealWebAPI.Models;
+using CropDealWebAPI.Repository;
 
 namespace CropDealWebAPI.Controllers
 {
@@ -14,16 +15,21 @@ namespace CropDealWebAPI.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly CropDealContext _context;
+        ExceptionRepositry _exception;
 
-        public InvoicesController(CropDealContext context)
+        public InvoicesController(CropDealContext context, ExceptionRepositry exception)
         {
             _context = context;
+            _exception = exception;
+
+
         }
+
         #region Get Invoices
         /// <summary>
         /// this method is used to Get Invoices
         /// </summary>
-        
+
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         // GET: api/Invoices
@@ -38,26 +44,12 @@ namespace CropDealWebAPI.Controllers
                 }
                 return await _context.Invoices.ToListAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at GetInvoices in Invoice");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At Invoices in  GetInvoices";
+                _exception.AddException(ex, causedAt,null);
                 return null;
+
             }
             finally { }
         }
@@ -91,26 +83,15 @@ namespace CropDealWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at GetInvoicesById in Invoice");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
+                string causedAt = "Error casued At Invoices in  GetInvoicesbyid";
+                await _exception.AddException(ex, causedAt,null);
 
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
                 return null;
             }
-            finally { }
+            finally
+            {
+
+            }
 
         }
         #endregion
@@ -141,23 +122,8 @@ namespace CropDealWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at PutInvoices in Invoice");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At Invoices in  PutInvoice";
+                _exception.AddException(ex, causedAt,null);
                 return null;
             }
             finally { }
@@ -178,7 +144,8 @@ namespace CropDealWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
-            try {
+            try
+            {
                 if (_context.Invoices == null)
                 {
                     return Problem("Entity set 'CropDealContext.Invoices'  is null.");
@@ -188,25 +155,11 @@ namespace CropDealWebAPI.Controllers
 
                 return CreatedAtAction("GetInvoice", new { id = invoice.InvoiceId }, invoice);
             }
-              catch (Exception ex)
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at PostInvoice in Invoice");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
+                string causedAt = "Error casued At Invoices in  PutInvoice";
+                _exception.AddException(ex, causedAt,null);
 
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
                 return null;
             }
             finally { }
@@ -241,23 +194,8 @@ namespace CropDealWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at DeleteInvoice in Invoice");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At Invoices in  DeleteInvoices";
+                _exception.AddException(ex, causedAt,null);
                 return null;
             }
             finally { }
@@ -281,23 +219,8 @@ namespace CropDealWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at InvoiceExists in Invoice");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
+                string causedAt = "Error casued At Invoices in InvoicesExists";
+                _exception.AddException(ex, causedAt,null);
                 return false;
             }
             finally { }

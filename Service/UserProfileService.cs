@@ -21,9 +21,9 @@ namespace CropDealWebAPI.Service
             return await _repository.GetIdAsync(id);
         }
         
-        public Task<int> UpdateUser(UserProfile userProfile)
+        public async Task<int> UpdateUser(UserProfile userProfile)
         {
-            return  _repository.UpdateAsync(userProfile);
+            return await _repository.UpdateAsync(userProfile);
         }
         public bool UserExists(int id)
         {

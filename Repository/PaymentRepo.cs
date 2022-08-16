@@ -1,12 +1,21 @@
 ﻿using CropDealWebAPI.Models;
+using CropDealWebAPI.Service;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
 
 namespace CropDealWebAPI.Repository
 {
     public class PaymentRepo : IPaymentRepository
     {
         CropDealContext _context;
-        public PaymentRepo(CropDealContext context) => _context = context;
+        ExceptionService _exception;
+        public PaymentRepo(CropDealContext context, ExceptionService exception)
+        {
+            _context = context;
+            _exception = exception; 
+        }
 
         #region Payment
         /// <summary>
@@ -19,6 +28,8 @@ namespace CropDealWebAPI.Repository
             try
             {
                 var Crpid = payment.CropAdid;
+                UserProfile farmer;
+                UserProfile dealer;
 
                 var query =
                     from f in _context.CropOnSales
@@ -39,6 +50,7 @@ namespace CropDealWebAPI.Repository
 
                     };
                 List<Invoice> invoices = query.ToList();
+
                 Invoice invoice1 = new Invoice();
                 foreach (var invoice in invoices)
                 {
@@ -51,19 +63,35 @@ namespace CropDealWebAPI.Repository
                     invoice1.DealerAccNumber = invoice.DealerAccNumber;
 
                 }
+                var user = await _context.UserProfiles
+                       .FirstOrDefaultAsync(x => x.UserId == payment.FarmerId);
 
-                if (await AddInvoice(invoice1,Crpid))
+                var result = await _context.UserProfiles
+                       .FirstOrDefaultAsync(x => x.UserId == payment.UserId);
+
+                if (user != null)
                 {
-                   
+                    farmer = user;
+                    dealer = result;
+                }
+                else
+                {
+                    return "400";
+                }
+
+                if (await AddInvoice(invoice1, Crpid, farmer, dealer))
+                {
+
                     return "200";
                 }
                 else
                 {
                     return "400";
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
+                string filePath = @"E:\Error.txt";
                 using (StreamWriter writer = new StreamWriter(filePath, true))
                 {
                     writer.WriteLine("-----------------------------------------------------------------------------");
@@ -90,21 +118,35 @@ namespace CropDealWebAPI.Repository
             }
 
         }
-        public  async Task<bool> AddInvoice(Invoice invoice ,int crpid)
+        #endregion
+
+        #region Add invoice
+        /// <summary>
+        /// this method is for adding invoice
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <param name="crpid"></param>
+        /// <param name="farmer"></param>
+        /// <param name="dealer"></param>
+        /// <returns></returns>
+        public async Task<bool> AddInvoice(Invoice invoice, int crpid, UserProfile farmer, UserProfile dealer)
         {
             try
             {
                 _context.Invoices.Add(invoice);
-              await  _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-               await DeleteCrop(crpid);
-                
-               
+                await DeleteCrop(crpid);
+                await SendEmail(invoice, farmer, dealer);
+                await SendEmailToDealer(invoice, farmer, dealer);
+
+
                 var response = true;
                 return response;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
+                string filePath = @"E:\Error.txt";
                 using (StreamWriter writer = new StreamWriter(filePath, true))
                 {
                     writer.WriteLine("-----------------------------------------------------------------------------");
@@ -120,6 +162,7 @@ namespace CropDealWebAPI.Repository
 
                         ex = ex.InnerException;
                     }
+
                 }
                 return false;
             }
@@ -128,7 +171,10 @@ namespace CropDealWebAPI.Repository
 
             }
         }
-        public async Task<bool> DeleteCrop (int crpid)
+        #endregion
+
+        #region Delete crop
+        public async Task<bool> DeleteCrop(int crpid)
         {
             try
             {
@@ -136,31 +182,133 @@ namespace CropDealWebAPI.Repository
                             .FirstOrDefaultAsync(x => x.CropAdId == crpid);
 
                 _context.CropOnSales.Remove(crop);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at DeleteCrop in Payment");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
+                string causedAt = "Error casued At Payment in DeleteCrop";
+               await  _exception.AddException(ex,causedAt,null);   
 
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
-                return false;
             }
+
+            finally
+            {
+
+            }
+            return false;
+
+
         }
+        #endregion
+
+        #region send Email to farmer
+        /// <summary>
+        /// This method is used for sending email to farmers
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <param name="farmer"></param>
+        /// <param name="Dealer"></param>
+        /// <returns></returns>
+        public async Task<bool> SendEmail(Invoice invoice, UserProfile farmer, UserProfile Dealer)
+        {
+            try
+            {
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse("cropdeal.info@gmail.com"));
+                email.To.Add(MailboxAddress.Parse(farmer.UserEmail));
+                email.Subject = "Your crops are sold";
+                email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = "Dear " + farmer.UserName + ",<br>" +
+                    "Congratulations ! your crop has been sold successfully, Login Now to Download your Invoice <br>" +
+                    "<strong>CROP DETAILS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEALER DETAILS             </strong><br>" +
+                    "CROP NAME :" + invoice.CropName + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEALER NAME : " + Dealer.UserName + "<br> " +
+                    "CROP TYPE :" + invoice.CropType + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEALER CONTACT :" + Dealer.UserPhnumber + "<br>" +
+                    "CROP QUANTITY :" + invoice.CropQty + "Kgs &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEALER ADDRESS :" + Dealer.UserAddress + "<br>" +
+                    " ----------------------------------------------------------------------------------------------------------<br>" +
+                    "ORDER TOTAL : Rs." + invoice.OrderTotal + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ORDER DATE      :" + invoice.InvoiceDate + "<br>" +
+                     " ----------------------------------------------------------------------------------------------------------<br>" +
+                    "Trasnfered from dealer Account number " + Dealer.UserAccnumber + " to your Account Number " + farmer.UserAccnumber + "<br>" +
+                    "<br>                                                                                                         " +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enjoy selling your crop with us!      <br> " +
+                    "<pre>                                                                                  regards,</pre>" +
+                    "<pre>                                                                                      Crop Deal.</pre>"
+                };
+                using var smtp = new SmtpClient();
+                smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate("cropdeal.info@gmail.com", "smfjnuihuecstwgf");
+                smtp.Send(email);
+                smtp.Disconnect(true);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                string causedAt = "Error casued At Payment in  SendEmail";
+                await _exception.AddException(ex, causedAt,null);
+            }
+            finally
+            {
+
+            }
+            return false;
+        }
+        #endregion
+
+        #region send email to dealer
+        /// <summary>
+        /// this method is used to send email to dealer
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <param name="farmer"></param>
+        /// <param name="Dealer"></param>
+        /// <returns></returns>
+
+
+        public async Task<bool> SendEmailToDealer(Invoice invoice, UserProfile farmer, UserProfile Dealer)
+        {
+            try
+            {
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse("cropdeal.info@gmail.com"));
+                email.To.Add(MailboxAddress.Parse(Dealer.UserEmail));
+                email.Subject = "Your Order processed sucessfully !";
+                email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = "Dear " + Dealer.UserName + ",<br>" +
+                    "Congratulations ! your order has been processed successfully , Login Now to Download your Invoice <br>" +
+                    "<strong>CROP DETAILS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FARMER DETAILS             </strong><br>" +
+                    "CROP NAME :" + invoice.CropName + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FARMER NAME : " + farmer.UserName + "<br> " +
+                    "CROP TYPE :" + invoice.CropType + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FARMER CONTACT :" + farmer.UserPhnumber + "<br>" +
+                    "CROP QUANTITY :" + invoice.CropQty + "Kgs &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FARMER ADDRESS :" + farmer.UserAddress + "<br>" +
+                    " ----------------------------------------------------------------------------------------------------------<br>" +
+                    "ORDER TOTAL : Rs." + invoice.OrderTotal + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ORDER DATE      :" + invoice.InvoiceDate + "<br>" +
+                     " ----------------------------------------------------------------------------------------------------------<br>" +
+                    "Trasnfered from your Account number " + Dealer.UserAccnumber + " to farmer Account Number " + farmer.UserAccnumber + "<br>" +
+                    "<br>                                                                                                         " +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enjoy Buying your crop with us!      <br> " +
+                    "<pre>                                                                                  regards,</pre>" +
+                    "<pre>                                                                                      Crop Deal.</pre>"
+                };
+                using var smtp = new SmtpClient();
+                smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate("cropdeal.info@gmail.com", "smfjnuihuecstwgf");
+                smtp.Send(email);
+                smtp.Disconnect(true);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                string causedAt = "Error casued At Payment in  SendEmailToDealer";
+               await _exception.AddException(ex, causedAt,null);
+            }
+            finally
+            {
+
+            }
+            return false;
+        }
+
         #endregion
 
         #region FarmersInvoice
@@ -209,34 +357,19 @@ namespace CropDealWebAPI.Repository
                     List<Invoice> invoices = res.ToList();
                     return invoices;
                 }
-                return null;
-            }catch (Exception ex)
+              
+            }
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at ViewInvoiceAsync in Payment");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
-                return null;
+                string causedAt = "Error casued At Payment in  ViewInvoiceAsync";
+               _exception.AddException(ex, causedAt, null);
             }
             finally
             {
 
             }
 
-
+            return null;
 
         }
         #endregion
@@ -277,7 +410,7 @@ namespace CropDealWebAPI.Repository
                                   OrderTotal = b.OrderTotal,
                                   InvoiceDate = b.InvoiceDate,
                                   DealerAccNumber = b.DealerAccNumber,
-                                 FarmerAccNumber = b.FarmerAccNumber
+                                  FarmerAccNumber = b.FarmerAccNumber
 
 
                               };
@@ -286,30 +419,15 @@ namespace CropDealWebAPI.Repository
                     List<Invoice> invoices = res.ToList();
                     return invoices;
                 }
-                return null;
+               
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                string filePath = @"D:\Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Error Caused at ViewDealerInvoice in Payment");
-                    writer.WriteLine("Date : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
-                    {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
-                    }
-                }
-                return null;
+                string causedAt = "Error casued At Payment in  ViewDealerInvoiceAsync";
+                _exception.AddException(ex, causedAt,null);
             }
             finally { }
+            return null;
 
         }
         #endregion
